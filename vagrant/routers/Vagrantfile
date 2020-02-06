@@ -1,0 +1,102 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  config.vm.define "R1" do |router|
+    
+    router.vm.box = "rjet/vyos"
+    router.vm.box_version = "1.3.202002050217"
+
+    router.vm.box_check_update = false
+
+    router.vm.hostname = "r1.rh.com"
+    router.vm.network :forwarded_port, guest: 22, host: 2331, host_ip: "127.0.0.1", id: "ssh"
+
+    router.vm.synced_folder ".", "/vagrant", disabled: true
+
+    router.vm.provider "virtualbox" do |v, override|
+      v.name = "R1"
+      v.memory = 1024
+      v.cpus   = 2
+
+      v.customize ["modifyvm", :id, "--cpus", "2"]
+      v.customize ["modifyvm", :id, "--nic2", "hostonly"]
+      v.customize ["modifyvm", :id, "--hostonlyadapter2", "vboxnet1"]      
+      v.customize ["modifyvm", :id, "--nic3", "intnet"]
+      v.customize ["modifyvm", :id, "--nic4", "hostonly"]              
+      v.customize ["modifyvm", :id, "--hostonlyadapter4", "vboxnet2"]            
+      v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+
+      v.customize ["modifyvm", :id, "--macaddress1", "080027e3b919"]
+      v.customize ["modifyvm", :id, "--macaddress2", "0800276dced9"]
+      v.customize ["modifyvm", :id, "--macaddress3", "080027f90cd2"]
+      v.customize ["modifyvm", :id, "--macaddress4", "0800277e6f79"]
+
+    end
+
+$routerscript = <<SCRIPT
+#!/bin/vbash
+source /opt/vyatta/etc/functions/script-template
+configure
+set interfaces ethernet eth1 address '192.168.128.1/24'
+set service ssh port '22'
+set system login user vyos authentication encrypted-password '$6$3wKthjveVhT2C$qxj2ax0ecOKtJMVZkAp2O3hwns4VjMcnJnNJp.BSEB9FLW1pTkoBWdKXYo726sajoR425RFQLEQvzt7I/7N3c/'
+set system login user vyos level admin
+commit
+save
+SCRIPT
+
+    router.vm.provision "shell", inline: $routerscript, privileged: false
+  end
+
+  config.vm.define "R2" do |router|
+    
+    router.vm.box = "rjet/vyos"
+    router.vm.box_version = "1.3.202002050217"
+
+    router.vm.box_check_update = false
+
+    router.vm.hostname = "r2.rh.com"
+    router.vm.network :forwarded_port, guest: 22, host: 2332, id: "ssh"
+    router.vm.synced_folder ".", "/vagrant", disabled: true
+
+    router.vm.provider "virtualbox" do |v, override|
+      v.name = "R2"
+      v.memory = 1024
+      v.cpus   = 2
+
+      v.customize ["modifyvm", :id, "--cpus", "2"]
+      v.customize ["modifyvm", :id, "--nic2", "hostonly"]
+      v.customize ["modifyvm", :id, "--hostonlyadapter2", "vboxnet1"]      
+      v.customize ["modifyvm", :id, "--nic3", "intnet"]
+      v.customize ["modifyvm", :id, "--nic4", "hostonly"]              
+      v.customize ["modifyvm", :id, "--hostonlyadapter4", "vboxnet3"]
+      v.customize ["modifyvm", :id, "--nic5", "hostonly"]              
+      v.customize ["modifyvm", :id, "--hostonlyadapter5", "vboxnet4"]               
+      v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+
+      v.customize ["modifyvm", :id, "--macaddress1", "080027329F5B"]
+      v.customize ["modifyvm", :id, "--macaddress2", "08002793328E"]
+      v.customize ["modifyvm", :id, "--macaddress3", "080027CDD188"]
+      v.customize ["modifyvm", :id, "--macaddress4", "080027A73F00"]
+      v.customize ["modifyvm", :id, "--macaddress5", "080027015F30"]
+
+    end
+
+$routerscript = <<SCRIPT
+#!/bin/vbash
+source /opt/vyatta/etc/functions/script-template
+configure
+set interfaces ethernet eth1 address '192.168.128.2/24'
+set service ssh port '22'
+set system login user vyos authentication encrypted-password '$6$3wKthjveVhT2C$qxj2ax0ecOKtJMVZkAp2O3hwns4VjMcnJnNJp.BSEB9FLW1pTkoBWdKXYo726sajoR425RFQLEQvzt7I/7N3c/'
+set system login user vyos level admin
+commit
+save
+SCRIPT
+
+    router.vm.provision "shell", inline: $routerscript, privileged: false
+  end
+
+end

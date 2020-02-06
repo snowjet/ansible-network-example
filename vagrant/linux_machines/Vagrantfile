@@ -1,0 +1,87 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  config.vm.define "server" do |server|
+    server.vm.box = "fedora/31-cloud-base"
+    server.vm.box_version = "31.20191023.0"
+
+    server.vm.box_check_update = false
+
+    server.vm.hostname = "server.rh.com"
+    server.vm.network :forwarded_port, guest: 22, host: 2322, id: "ssh"
+
+    server.vm.provider "virtualbox" do |v, override|
+      v.name = "server"
+      v.memory = 1024
+      v.cpus   = 2
+      server.vm.network "private_network", :ip => '192.168.129.100', :name => 'vboxnet2', :adapter => 2
+      v.customize ["modifyvm", :id, "--cpus", "2"]
+      v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+    end
+
+    server.vm.provision "file", source: "html", destination: "$HOME/html"
+
+    server.vm.provision "shell", inline: <<-SHELL
+      ip route add 192.168.0.0/16 via 192.168.129.1
+      dnf install httpd -y
+      systemctl enable httpd
+      systemctl start httpd
+      mkdir -p /var/www/html
+      cp /home/vagrant/html/* /var/www/html/
+      echo "finish"
+    SHELL
+  end
+  
+
+  config.vm.define "client" do |client|
+    client.vm.box = "fedora/31-cloud-base"
+    client.vm.box_version = "31.20191023.0"
+
+    client.vm.box_check_update = false
+
+    client.vm.hostname = "client.rh.com"
+    client.vm.network :forwarded_port, guest: 22, host: 2323, id: "ssh"
+
+    client.vm.provider "virtualbox" do |v, override|
+      v.name = "client"
+      v.memory = 768
+      v.cpus   = 2
+      client.vm.network "private_network", :ip => '192.168.130.100', :name => 'vboxnet3', :adapter => 2
+      v.customize ["modifyvm", :id, "--cpus", "2"]
+      v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+    end
+
+    client.vm.provision "shell", inline: <<-SHELL
+      dnf install xorg-x11-server-Xorg xorg-x11-xauth firefox -y
+      ip route add 192.168.0.0/16 via 192.168.130.2
+      echo "\n192.168.129.100  server.rh.com\n" >> /etc/hosts
+    SHELL
+  end
+  
+  config.vm.define "bad" do |bad|
+    bad.vm.box = "fedora/31-cloud-base"
+    bad.vm.box_version = "31.20191023.0"
+
+    bad.vm.box_check_update = false
+
+    bad.vm.hostname = "bad.rh.com"
+    bad.vm.network :forwarded_port, guest: 22, host: 2324, id: "ssh"
+
+    bad.vm.provider "virtualbox" do |v, override|
+      v.name = "bad"
+      v.memory = 768
+      v.cpus   = 2
+      bad.vm.network "private_network", :ip => '192.168.131.100', :name => 'vboxnet4', :adapter => 2
+      v.customize ["modifyvm", :id, "--cpus", "2"]
+      v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+    end
+
+    bad.vm.provision "shell", inline: <<-SHELL
+      dnf install xorg-x11-server-Xorg xorg-x11-xauth firefox -y
+      ip route add 192.168.0.0/16 via 192.168.131.2
+      echo "\n192.168.129.100  server.rh.com\n" >> /etc/hosts
+    SHELL
+  end  
+end

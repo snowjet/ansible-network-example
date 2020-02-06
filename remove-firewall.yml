@@ -1,0 +1,7 @@
+---
+
+- name: remove firewall on R1
+  hosts: routers
+  roles:
+    - remove_firewall
+  gather_facts: no

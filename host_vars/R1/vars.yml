@@ -1,0 +1,52 @@
+---
+
+hostname: R1
+
+mgmt_address: 192.168.128.1
+
+interfaces:
+  - name: lo
+    type: loopback
+    ip: 192.168.254.1/32
+  - name: eth2
+    ip: '172.16.0.1/24'
+    type: ethernet
+  - name: eth3
+    ip: '192.168.129.1/24'
+    type: ethernet
+
+RIP_config:
+  networks:
+    - '172.16.0.0/24'
+
+firewall:
+  firewall_groups:
+    - name: NET_CLIENTS
+      network: 192.168.130.0/24
+    - name: NET_SERVERS
+      network: 192.168.129.0/24
+  firewall_rules:
+    - name: CLIENT-SERVER
+      default_action: drop
+      interfaces:
+        - interface: eth3
+          direction: out
+      rules:
+        - num: 1010
+          actions: action accept
+        - num: 1010
+          actions: protocol all
+        - num: 1010
+          actions: state established enable
+        - num: 1010
+          actions: state related enable               
+        - num: 1015
+          actions: action accept          
+        - num: 1015
+          actions: protocol all
+        - num: 1015
+          actions: source group network-group NET_CLIENTS                          
+        - num: 1020
+          actions: action drop
+        - num: 1020
+          actions: state invalid enable

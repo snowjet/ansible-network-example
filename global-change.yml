@@ -1,0 +1,8 @@
+---
+
+- name: install updated banner
+  hosts: routers
+  roles:
+    - install_new_banner
+  gather_facts: no  
+  

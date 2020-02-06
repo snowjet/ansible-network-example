@@ -1,0 +1,69 @@
+---
+# tasks file
+
+- name: retrieve configuraiton
+  vyos_facts:
+    gather_subset: config
+  register: results
+
+- debug: 
+    var: results
+    verbosity: 2
+
+- name: 
+  git:
+    repo: "{{ config_git_repo }}"
+    dest: "{{ local_git_conf_dir }}"
+    accept_hostkey : yes
+    force: yes
+  run_once: true
+
+- name: get current datetime as epoch
+  local_action:
+    module: command
+    cmd: 'date +%s'
+  register: date_as_epoch
+  run_once: true  
+
+- name: ensure direcory for router exists
+  local_action:
+      module: file
+      path: "{{ local_git_conf_dir }}/{{ inventory_hostname }}"
+      state: directory
+
+- name: pull back config
+  local_action:
+    module: template
+    src: config.j2
+    dest: "{{ local_git_conf_dir }}/{{ inventory_hostname }}/{{ inventory_hostname }}-{{ date_as_epoch.stdout_lines.0 }}-config"
+
+- name: commit
+  local_action:
+    module: shell 
+    cmd: "git  -c 'user.name=Tower' -c 'user.email=node@tower.com' {{ item }}"  
+    args:
+      chdir: "{{ local_git_conf_dir }}/"
+  loop: 
+    - "add ."
+    - "commit -m 'Router Config Updates - {{ date_as_epoch.stdout_lines.0 }}'"
+    - "push"
+  run_once: true
+
+- name: linux diff compare
+  local_action:
+    module: shell
+    cmd: "diff -c -w --strip-trailing-cr {{ inventory_hostname }}-GOLD-config {{ inventory_hostname }}-{{ date_as_epoch.stdout_lines.0 }}-config"
+    args:
+      chdir: "{{ local_git_conf_dir }}/{{ inventory_hostname }}/"
+  register: diff_files
+  ignore_errors: True
+
+- debug: 
+    var: diff_files.stdout_lines
+    verbosity: 2
+
+# Check if there is a difference in config and notify
+- name: Restore GOLD Configuration
+  vyos_config:
+    lines: "{{ lookup('file', local_git_conf_dir ~ '/' ~ inventory_hostname ~ '/' ~ inventory_hostname ~ '-GOLD-config') }}"
+  when: diff_files.rc != 0

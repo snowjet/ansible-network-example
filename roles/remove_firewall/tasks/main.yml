@@ -1,0 +1,11 @@
+---
+# remove firewall rule
+
+- name: remove the firewall rule
+  vyos_config:
+    lines:
+      - delete interfaces ethernet {{ item.1.interface }} firewall 
+  with_subelements:
+    - "{{ firewall.firewall_rules }}"
+    - interfaces
+  when: firewall is defined

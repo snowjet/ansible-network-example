@@ -1,0 +1,9 @@
+[routers]
+R1 ansible_host=192.168.128.1 ansible_network_os=vyos ansible_user=vyos
+R2 ansible_host=192.168.128.2 ansible_network_os=vyos ansible_user=vyos
+
+[Clients]
+client ansible_host=192.168.130.100
+
+[Servers]
+server ansible_host=192.168.129.100

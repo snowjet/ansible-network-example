@@ -1,0 +1,32 @@
+---
+
+ansible_connection: network_cli
+ansible_network_os: vyos
+ansible_user: vyos
+ansible_password: vyos
+ansible_os: vyos
+    
+login_banner: |
+
+    Access to this Device is Restricted 
+
+    All access is monitored!! 
+
+    Disconnect Now
+    
+    .
+    
+
+new_login_banner: |
+
+    GLOBAL Configuration Change
+    
+    Access to this Device is Restricted 
+
+    All access is monitored!! 
+
+    Disconnect Now
+
+    .
+
+

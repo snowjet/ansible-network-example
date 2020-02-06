@@ -1,0 +1,6 @@
+---
+
+local_git_conf_dir: '/tmp/router-confs'
+config_git_repo: git@github.com:snowjet/example-router-configs.git
+
+email_alert_address: "{{ VAULT_EMAIL_ADDRESS }}"

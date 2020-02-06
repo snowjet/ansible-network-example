@@ -1,0 +1,71 @@
+---
+# tasks file
+
+- name: configure the pre-login banner
+  vyos_banner:
+    banner: pre-login
+    text: "{{ login_banner }}"
+    state: present
+
+- name: remove the post-login banner
+  vyos_banner:
+    banner: post-login
+    state: absent
+
+- name: set system hostname and remove vagrant user
+  vyos_config:
+    lines:
+      - set system host-name {{ hostname }}
+      - set service lldp
+      - set service lldp management-address {{ mgmt_address }}
+      - delete system login user vagrant
+
+- name: configure interface addresses
+  vyos_config:
+    lines:
+      - "set interfaces {{ item.type }} {{ item.name }} address {{ item.ip }}"
+      - "set service lldp interface {{ item.name }}"
+  loop: "{{ interfaces }}"
+
+- name: enable RIP
+  vyos_config:
+    lines:
+      - set protocols rip redistribute connected
+    
+- name: configure RIP networks
+  vyos_config:
+    lines:
+      - set protocols rip network {{ item }}
+  loop: "{{ RIP_config.networks }}"
+
+- name: configure network-group
+  vyos_config:
+    lines:
+      - set firewall group network-group {{ item.name }} network {{ item.network }}
+  loop: "{{ firewall.firewall_groups }}"
+  when: firewall is defined
+
+- name: configure firewall rules default-action
+  vyos_config:
+    lines:
+      - set firewall name {{ item.name }} default-action {{ item.default_action }}
+  loop: "{{ firewall.firewall_rules }}"
+  when: firewall is defined
+
+- name: configure firewall rules
+  vyos_config:
+    lines:
+      - set firewall name {{ item.0.name }} rule {{ item.1.num }} {{ item.1.actions }}
+  with_subelements:
+    - "{{ firewall.firewall_rules }}"
+    - rules
+  when: firewall is defined
+
+- name: fix firewall rules
+  vyos_config:
+    lines:
+      - set interfaces ethernet {{ item.1.interface }} firewall {{ item.1.direction }} name {{ item.0.name }}
+  with_subelements:
+    - "{{ firewall.firewall_rules }}"
+    - interfaces
+  when: firewall is defined

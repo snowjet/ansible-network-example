@@ -1,0 +1,7 @@
+---
+
+- name: configure baseconfig on routers
+  hosts: routers
+  roles:
+    - gen_network_diagram
+  gather_facts: no

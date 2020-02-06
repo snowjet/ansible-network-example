@@ -1,0 +1,7 @@
+---
+
+- name: configure baseconfig on routers
+  hosts: routers
+  roles:
+    - initial_router_config
+  gather_facts: no

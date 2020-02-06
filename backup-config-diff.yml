@@ -1,0 +1,6 @@
+---
+
+- name: collect facts
+  hosts: routers
+  roles:
+    - backup_configs

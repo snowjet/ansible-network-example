@@ -1,0 +1,21 @@
+---
+
+- name: Get LLDP neighbors
+  local_action:
+    module: napalm_get_facts
+    hostname: "{{ansible_host|default(inventory_hostname)}}"
+    username: "{{ansible_user}}"
+    password: "{{ansible_password}}"
+    dev_os: "{{ansible_os}}"
+    optional_args:
+      port: "{{api_port|default(ansible_port)|default(22)}}"
+    filter:
+      - facts
+      - lldp_neighbors
+
+- name: Generate graph description file
+  local_action:
+    module: template
+    src: graph.j2
+    dest: /tmp/network_dot
+  run_once: true
