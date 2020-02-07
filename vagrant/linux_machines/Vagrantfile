@@ -25,11 +25,13 @@ Vagrant.configure("2") do |config|
 
     server.vm.provision "shell", inline: <<-SHELL
       ip route add 192.168.0.0/16 via 192.168.129.1
-      dnf install httpd -y
+      dnf install httpd lldpad -y
       systemctl enable httpd
       systemctl start httpd
       mkdir -p /var/www/html
       cp /home/vagrant/html/* /var/www/html/
+      systemctl start lldpad
+      for i in `ls /sys/class/net/ | grep eth`; do echo "enabling lldp for interface: $i"; lldptool set-lldp -i "$i" adminStatus=rxtx; lldptool -T -i $i -V sysName enableTx=yes; lldptool -T -i $i -V portDesc enableTx=yes;  lldptool -T -i $i -V sysDesc enableTx=yes;lldptool -T -i $i -V sysCap enableTx=yes; lldptool -T -i $i -V mngAddr enableTx=yes; done
       echo "finish"
     SHELL
   end
@@ -54,9 +56,11 @@ Vagrant.configure("2") do |config|
     end
 
     client.vm.provision "shell", inline: <<-SHELL
-      dnf install xorg-x11-server-Xorg xorg-x11-xauth firefox -y
+      dnf install xorg-x11-server-Xorg xorg-x11-xauth firefox lldpad -y
       ip route add 192.168.0.0/16 via 192.168.130.2
       echo "\n192.168.129.100  server.rh.com\n" >> /etc/hosts
+      systemctl start lldpad
+      for i in `ls /sys/class/net/ | grep eth`; do echo "enabling lldp for interface: $i"; lldptool set-lldp -i "$i" adminStatus=rxtx; lldptool -T -i $i -V sysName enableTx=yes; lldptool -T -i $i -V portDesc enableTx=yes;  lldptool -T -i $i -V sysDesc enableTx=yes;lldptool -T -i $i -V sysCap enableTx=yes; lldptool -T -i $i -V mngAddr enableTx=yes; done
     SHELL
   end
   
@@ -79,9 +83,11 @@ Vagrant.configure("2") do |config|
     end
 
     bad.vm.provision "shell", inline: <<-SHELL
-      dnf install xorg-x11-server-Xorg xorg-x11-xauth firefox -y
+      dnf install xorg-x11-server-Xorg xorg-x11-xauth firefox lldpad -y
       ip route add 192.168.0.0/16 via 192.168.131.2
       echo "\n192.168.129.100  server.rh.com\n" >> /etc/hosts
+      systemctl start lldpad
+      for i in `ls /sys/class/net/ | grep eth`; do echo "enabling lldp for interface: $i"; lldptool set-lldp -i "$i" adminStatus=rxtx; lldptool -T -i $i -V sysName enableTx=yes; lldptool -T -i $i -V portDesc enableTx=yes;  lldptool -T -i $i -V sysDesc enableTx=yes;lldptool -T -i $i -V sysCap enableTx=yes; lldptool -T -i $i -V mngAddr enableTx=yes; done
     SHELL
   end  
 end

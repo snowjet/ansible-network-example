@@ -10,6 +10,7 @@ This repository contains and Ansible Tower Playbook to demonstrate the capabilit
 * deploy a new site - configure routers and setup routing
 * backup configuration and diff against gold configs
 * remediate configuration from gold config
+* generate a network diagram based on LLDP information
 
 ## Pre-reqs
 
@@ -125,7 +126,5 @@ config_git_repo: "set the git repo to store and pull router configurations"
 
 ### generate LLDP Network Diagram 
 
-*Work In Progeress*
+![Generate Network Diagram](docs/images/gen_network_diagram.png)
 
-see the following for the inspiration:
-https://blog.ipspace.net/2017/10/create-network-diagram-from-lldp.html
