@@ -37,18 +37,6 @@
     src: config.j2
     dest: "{{ local_git_conf_dir }}/{{ inventory_hostname }}/{{ inventory_hostname }}-{{ date_as_epoch.stdout_lines.0 }}-config"
 
-- name: commit
-  local_action:
-    module: shell 
-    cmd: "git  -c 'user.name=Tower' -c 'user.email=node@tower.com' {{ item }}"  
-    args:
-      chdir: "{{ local_git_conf_dir }}/"
-  loop: 
-    - "add ."
-    - "commit -m 'Router Config Updates - {{ date_as_epoch.stdout_lines.0 }}'"
-    - "push"
-  run_once: true
-
 - name: check if existing GOLD config exists
   local_action:
     module: stat
@@ -61,6 +49,18 @@
     src: config.j2
     dest: "{{ local_git_conf_dir }}/{{ inventory_hostname }}/{{ inventory_hostname }}-GOLD-config"
   when: stat_result.stat.exists == False 
+
+- name: commit
+  local_action:
+    module: shell 
+    cmd: "git  -c 'user.name=Tower' -c 'user.email=node@tower.com' {{ item }}"  
+    args:
+      chdir: "{{ local_git_conf_dir }}/"
+  loop: 
+    - "add ."
+    - "commit -m 'Router Config Updates - {{ date_as_epoch.stdout_lines.0 }}'"
+    - "push"
+  run_once: true
 
 - name: linux diff compare
   local_action:
