@@ -1,0 +1,43 @@
+---
+# tasks file
+
+- name: retrieve configuraiton
+  vyos_facts:
+    gather_subset: config
+  register: results
+
+- debug: 
+    var: results
+    verbosity: 2
+
+- name: 
+  git:
+    repo: "{{ config_git_repo }}"
+    dest: "{{ local_git_conf_dir }}"
+    accept_hostkey : yes
+    force: yes
+  run_once: true
+
+- name: ensure direcory for router exists
+  local_action:
+      module: file
+      path: "{{ local_git_conf_dir }}/{{ inventory_hostname }}"
+      state: directory
+
+- name: pull back config
+  local_action:
+    module: template
+    src: config.j2
+    dest: "{{ local_git_conf_dir }}/{{ inventory_hostname }}/{{ inventory_hostname }}-GOLD-config"
+
+- name: commit
+  local_action:
+    module: shell 
+    cmd: "git  -c 'user.name=Tower' -c 'user.email=node@tower.com' {{ item }}"  
+    args:
+      chdir: "{{ local_git_conf_dir }}/"
+  loop: 
+    - "add ."
+    - "commit -m 'Check-in GOLD Configurations'"
+    - "push"
+  run_once: true

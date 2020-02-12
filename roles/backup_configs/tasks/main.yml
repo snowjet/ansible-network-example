@@ -49,6 +49,19 @@
     - "push"
   run_once: true
 
+- name: check if existing GOLD config exists
+  local_action:
+    module: stat
+    path: "{{ local_git_conf_dir }}/{{ inventory_hostname }}/{{ inventory_hostname }}-GOLD-config"
+  register: stat_result
+
+- name: install gold configuration
+  local_action:
+    module: template
+    src: config.j2
+    dest: "{{ local_git_conf_dir }}/{{ inventory_hostname }}/{{ inventory_hostname }}-GOLD-config"
+  when: stat_result.stat.exists == False 
+
 - name: linux diff compare
   local_action:
     module: shell

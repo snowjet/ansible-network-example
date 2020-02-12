@@ -1,0 +1,7 @@
+---
+
+- name: fix firewall on routers
+  hosts: routers
+  roles:
+    - gen_gold_config
+  gather_facts: no
