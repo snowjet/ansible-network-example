@@ -35,6 +35,9 @@ vboxmanage hostonlyif ipconfig vboxnet4 --ip 192.168.131.0 --netmask 255.255.255
 ## Deploy
 
 ```bash
+cd vagrant/tower
+vagrant up
+
 cd vagrant/routers
 vagrant up
 
@@ -43,6 +46,12 @@ vagrant up
 ```
 
 ## Ansible Tower
+
+*vagrant*
+Vagrant will provision a Tower instance that you can access via: *https://127.0.0.1:8443*
+Note - It will take a few minutes for Tower to become available. The username and password will be displayed once vagrant has finished provisioning.
+
+You will need to add your license file, create the credentials and import the playbook (these steps will be automated.)
 
 *Credentials*
 * git-ssh | Machine | add the ssh key to pull and update your private repo to host the router configurations

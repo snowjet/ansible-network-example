@@ -1,0 +1,37 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  config.vm.box = "ansible/tower"
+  config.vm.box_check_update = false
+
+  config.vm.define "tower-vagrant"
+
+  config.vm.hostname = "tower.rh.com"
+  config.vm.network :forwarded_port, guest: 22, host: 2231, host_ip: "127.0.0.1", id: "ssh"
+  config.vm.network :forwarded_port, guest: 443, host: 8443, host_ip: "127.0.0.1", id: "https"
+
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+
+  config.vm.network "private_network", ip: "192.168.128.254", :adapter => 2, :netmask => "255.255.255.0"
+
+  config.vm.provider "virtualbox" do |v, override|
+    v.name = "tower-vagrant"
+    v.memory = 1024
+    v.cpus   = 2
+
+    v.customize ["modifyvm", :id, "--cpus", "2"]
+    v.customize ["modifyvm", :id, "--nic2", "hostonly"]
+    v.customize ["modifyvm", :id, "--hostonlyadapter2", "vboxnet1"]                
+    v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+  end
+
+$script = <<SCRIPT
+#!/bin/bash
+n=`atq | wc -l`; while (( $n != 0 )); do echo "waiting for Tower install to complete"; sleep 10; n=`atq | wc -l`; done
+/etc/profile.d/ansible-tower.sh
+SCRIPT
+
+  config .vm.provision "shell", inline: $script, privileged: true
+end
