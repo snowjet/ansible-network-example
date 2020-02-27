@@ -60,8 +60,22 @@ You will need to add your license file, create the credentials and import the pl
 *Inventory*
 - Group: Routers
 - Hosts:
-  - R1 - 192.168.128.1 
+  - R1 - 192.168.128.1
   - R2 - 192.168.128.2
+
+*vars for hosts - e.g. R1*
+```yaml
+---
+ansible_host: 192.168.128.1
+ansible_network_os: vyos
+ansible_user: vyos
+```
+
+
+#### Guide to configure Tower to send email
+
+The link below explains how to configure postfix on the local tower node to send emails via GMail.
+https://digitalave.github.io/spring/2019/10/25/Setup-Postfix-To-Send-Emails-Using-Gmail-Relay.html
 
 ## Connecting to the Trusted Client 
 
