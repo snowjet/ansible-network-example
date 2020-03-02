@@ -65,5 +65,7 @@
 # Check if there is a difference in config and notify
 - name: Restore GOLD Configuration
   vyos_config:
-    lines: "{{ lookup('file', local_git_conf_dir ~ '/' ~ inventory_hostname ~ '/' ~ inventory_hostname ~ '-GOLD-config') }}"
+    match: line
+    src: "{{ local_git_conf_dir }}/{{ inventory_hostname }}/{{ inventory_hostname }}-GOLD-config"
+#    lines: "{{ lookup('file', local_git_conf_dir ~ '/' ~ inventory_hostname ~ '/' ~ inventory_hostname ~ '-GOLD-config') }}"
   when: diff_files.rc != 0
