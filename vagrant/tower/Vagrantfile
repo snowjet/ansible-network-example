@@ -33,9 +33,7 @@ n=`atq | wc -l`; while (( $n != 0 )); do echo "waiting for Tower install to comp
 /etc/profile.d/ansible-tower.sh
 cd /opt
 virtualenv -p /opt/rh/rh-python36/root/bin/python3 /opt/tower-config
-virtualenv -p /opt/rh/rh-python36/root/bin/python3 /var/lib/awx/venv/python3
 /opt/tower-config/bin/pip install graphviz ansible-tower-cli
-/var/lib/awx/venv/python3/bin/pip install graphviz ansible
 SCRIPT
 
   config .vm.provision "shell", inline: $script, privileged: true
