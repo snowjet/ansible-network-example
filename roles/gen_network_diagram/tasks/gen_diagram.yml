@@ -3,7 +3,7 @@
 - name: generate network diagram
   local_action:
     module: script
-    cmd: "dyn_gen_diagram.py --git_dir {{ local_git_conf_dir }}"
+    cmd: "/var/lib/awx/venv/python3/bin/python dyn_gen_diagram.py --git_dir {{ local_git_conf_dir }}"
 
 - name: Sending an e-mail using the remote machine, not the Ansible controller node
   mail:
