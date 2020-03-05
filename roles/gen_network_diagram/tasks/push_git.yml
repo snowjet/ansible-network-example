@@ -1,0 +1,23 @@
+---
+
+- name: get current datetime as epoch
+  local_action:
+    module: command
+    cmd: 'date +%s'
+  register: date_as_epoch
+  run_once: true
+
+- name: commit
+  local_action:
+    module: shell 
+    cmd: "git  -c 'user.name=Tower' -c 'user.email=node@tower.com' {{ item }}"  
+    args:
+      chdir: "{{ local_git_conf_dir }}/"
+  loop: 
+    - "add ."
+    - "commit -m 'Router LLDP and Interfaces Updates - {{ date_as_epoch.stdout_lines.0 }}'"
+    - "push"
+  run_once: true
+
+
+          

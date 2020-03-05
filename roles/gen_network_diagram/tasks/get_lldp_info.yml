@@ -1,0 +1,47 @@
+---
+
+- name: Get active interfaces
+  vyos_command:
+    commands:
+      - show interfaces
+  register: interface_results
+
+- debug:
+    var: interface_results.stdout_lines
+
+- name: Get LLDP neighbors
+  vyos_command:
+    commands:
+      - show lldp neighbors
+  register: neighbors_results
+  
+- debug:
+    msg: "{{ neighbors_results.stdout_lines }}"
+
+- name: 
+  local_action:
+    module: git
+    repo: "{{ config_git_repo }}"
+    dest: "{{ local_git_conf_dir }}"
+    accept_hostkey : yes
+    force: yes
+  run_once: true
+
+- name: ensure direcory for router exists
+  local_action:
+      module: file
+      path: "{{ local_git_conf_dir }}/{{ inventory_hostname }}"
+      state: directory
+
+- name: write interfaces to file
+  local_action:
+    module: template
+    src: interfaces.j2
+    dest: "{{ local_git_conf_dir }}/{{ inventory_hostname }}/{{ inventory_hostname }}-interfaces"
+
+- name: write lldp to file
+  local_action:
+    module: template
+    src: lldp.j2
+    dest: "{{ local_git_conf_dir }}/{{ inventory_hostname }}/{{ inventory_hostname }}-neighbors"    
+

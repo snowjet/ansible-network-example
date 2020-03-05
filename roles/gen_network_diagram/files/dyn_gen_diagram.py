@@ -1,17 +1,24 @@
 #!/usr/bin/env python3
 
 import re
-import os 
+import os
+import argparse 
 from pathlib import Path
 from graphviz import Digraph
 
 ROUTER = ''
 edges = {}
 nodes = {}
-git_folder = "/tmp/router-confs"
+
+import argparse
+
+parser = argparse.ArgumentParser(description='Generate Network Diagram')
+parser.add_argument("--git_folder", default="/tmp/router-confs")
+args, unknown_args = parser.parse_known_args()
+
 
 def build_nodes():
-  pathlist = Path(git_folder).glob('*/*-interfaces')
+  pathlist = Path(args.git_folder).glob('*/*-interfaces')
 
   for path in pathlist:
 
@@ -49,7 +56,7 @@ def build_nodes():
 
 
 def build_edges():
-  pathlist = Path(git_folder).glob('*/*-neighbors')
+  pathlist = Path(args.git_folder).glob('*/*-neighbors')
   for path in pathlist:
 
     ROUTER = str(path).split('/')[-1].replace('-neighbors','')
@@ -81,11 +88,11 @@ def build_edges():
 
 def generate_graphviz():
 
-  network_diag_file = git_folder + "/" + 'network_diag.gv'
+  network_diag_file = args.git_folder + "/network_diagram"
 
   color = 'blue'
 
-  dot = Digraph('Network Diagram', filename=network_diag_file, 
+  dot = Digraph('Network Diagram', filename=network_diag_file, format='pdf', 
               node_attr={'shape': 'record',  'fontname' : "helvetica"})
 
   dot.attr(overlap='scale')
@@ -98,7 +105,8 @@ def generate_graphviz():
   for key, value in edges.items():
     dot.edge(key, value, color=color)
 
-  dot.view()
+  dot.render(network_diag_file, view=False)
+  # dot.view()
 
 build_edges()
 build_nodes()
