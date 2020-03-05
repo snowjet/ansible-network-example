@@ -1,0 +1,39 @@
+---
+
+- name: Create tower organization
+  tower_organization:
+    name: "{{ tower_org }}"
+    description: "Red Hat Networking"
+    state: present
+    tower_host: "https://127.0.0.1:443"
+    tower_password: password
+    tower_username: admin
+    validate_certs: no
+
+- name: Add tower project
+  tower_project:
+    name: "ansible-networking"
+    description: "ansible-networking"
+    organization: "{{ tower_org }}"
+    scm_type: git
+    scm_url: https://github.com/snowjet/ansible-network-example.git
+    scm_branch: master
+    scm_update_on_launch: true
+    state: present
+    tower_host: "https://127.0.0.1:443"
+    tower_password: password
+    tower_username: admin
+    validate_certs: no
+
+- name: Create a valid vyos-ssh credential 
+  tower_credential:
+    name: vyos-ssh
+    organization:  "{{ tower_org }}"
+    state: present
+    kind: net
+    username: vyos
+    password: vyos
+    tower_host: "https://127.0.0.1:443"
+    tower_password: password
+    tower_username: admin
+    validate_certs: no

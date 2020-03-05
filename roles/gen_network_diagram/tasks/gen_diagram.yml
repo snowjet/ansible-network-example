@@ -1,10 +1,5 @@
 ---
 
-- name: create virtualenv with graphviz
-  local_action: 
-    module: pip
-    name: graphviz
-
 - name: generate network diagram
   local_action:
     module: script

@@ -1,0 +1,6 @@
+---
+
+- name: install updated banner
+  hosts: tower
+  roles:
+    - tower_config  

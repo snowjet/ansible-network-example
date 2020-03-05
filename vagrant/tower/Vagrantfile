@@ -31,6 +31,10 @@ $script = <<SCRIPT
 #!/bin/bash
 n=`atq | wc -l`; while (( $n != 0 )); do echo "waiting for Tower install to complete"; sleep 10; n=`atq | wc -l`; done
 /etc/profile.d/ansible-tower.sh
+cd /opt
+virtualenv /opt/tower-config
+/opt/tower-config/bin/pip install graphviz ansible-tower-cli
+/var/lib/awx/venv/ansible/bin/pip install graphviz
 SCRIPT
 
   config .vm.provision "shell", inline: $script, privileged: true
