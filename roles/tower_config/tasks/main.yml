@@ -1,12 +1,20 @@
 ---
 
+- name: get tower password
+  shell:
+    cmd: "cat /etc/profile.d/ansible-tower.sh | awk '/Password/ {print $4}'"
+  register: results
+
+- debug:
+    var: results.stdout
+
 - name: Create tower organization
   tower_organization:
     name: "{{ tower_org }}"
     description: "Red Hat Networking"
     state: present
     tower_host: "https://127.0.0.1:443"
-    tower_password: password
+    tower_password: "{{ results.stdout }}"
     tower_username: admin
     validate_certs: no
 
@@ -21,7 +29,7 @@
     scm_update_on_launch: true
     state: present
     tower_host: "https://127.0.0.1:443"
-    tower_password: password
+    tower_password: "{{ results.stdout }}"
     tower_username: admin
     validate_certs: no
 
@@ -34,6 +42,6 @@
     username: vyos
     password: vyos
     tower_host: "https://127.0.0.1:443"
-    tower_password: password
+    tower_password: "{{ results.stdout }}"
     tower_username: admin
     validate_certs: no
