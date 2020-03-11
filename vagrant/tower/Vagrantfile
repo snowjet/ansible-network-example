@@ -34,8 +34,6 @@ n=`atq | wc -l`; while (( $n != 0 )); do echo "waiting for Tower install to comp
 echo -n "Tower start complete"
 echo -n "Installing SSH keys"
 mkdir -p /root/.ssh
-echo "tst" >> /root/1
-echo "tst" >> /root/1/.ssh
 cp /home/vagrant/.ssh/import_keys.pub /root/.ssh/import_keys.pub
 cd /root/.ssh/
 cat import_keys.pub >> authorized_keys
