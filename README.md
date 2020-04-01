@@ -37,7 +37,51 @@ vboxmanage hostonlyif ipconfig vboxnet4 --ip 192.168.131.0 --netmask 255.255.255
 ```bash
 cd vagrant/tower
 vagrant up
+...
+...
+    tower-vagrant: Finished
+    tower-vagrant:
+    tower-vagrant:   Welcome to Ansible Tower!
+    tower-vagrant:
+    tower-vagrant:   Log into the web interface here:
+    tower-vagrant:
+    tower-vagrant:     https://10.42.0.42/
+    tower-vagrant:
+    tower-vagrant:     Username: admin
+    tower-vagrant:     Password: <random string>
+    tower-vagrant:
+    tower-vagrant:   The documentation for Ansible Tower is available here:
+    tower-vagrant:
+    tower-vagrant:     http://www.ansible.com/tower/
+    tower-vagrant:
+    tower-vagrant:   For help, visit  http://support.ansible.com/
 
+
+cd ../..
+
+ansible-playbook -i inventory configure-tower.yml
+PLAY [install updated banner] ***********************************************************************************************************************************************************
+
+TASK [Gathering Facts] ***********************************************************************************************************************************************************
+ok: [tower]
+
+TASK [tower_config : get tower password] ***********************************************************************************************************************************************************
+changed: [tower]
+
+TASK [tower_config : Create tower organization] ***********************************************************************************************************************************************************
+changed: [tower]
+
+TASK [tower_config : Add tower project] ***********************************************************************************************************************************************************
+changed: [tower]
+
+TASK [tower_config : Create a valid vyos-ssh credential] ***********************************************************************************************************************************************************
+changed: [tower]
+
+PLAY RECAP ************************************************************************************************************************************************
+tower                      : ok=6    changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+```
+
+```bash
 cd vagrant/routers
 vagrant up
 
