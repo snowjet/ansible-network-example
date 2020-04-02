@@ -33,6 +33,33 @@
     tower_username: admin
     validate_certs: no
 
+- name: Add tower inventory
+  tower_inventory:
+    name: "Routers"
+    description: "Routers to Configure"
+    organization: "{{ tower_org }}"
+    state: present
+    tower_host: "https://127.0.0.1:443"
+    tower_password: "{{ results.stdout }}"
+    tower_username: admin
+    validate_certs: no
+
+- name: Add tower Router inventory source
+  tower_inventory_source:
+    name: Router Inventory source
+    description: Router Inventory source
+    inventory: Routers
+    source: scm
+    source_path: inventory
+    source_project: ansible-networking
+    update_on_launch: true
+    overwrite: true
+    state: present
+    tower_host: "https://127.0.0.1:443"
+    tower_password: "{{ results.stdout }}"
+    tower_username: admin
+    validate_certs: no
+
 - name: Create a valid vyos-ssh credential 
   tower_credential:
     name: vyos-ssh
@@ -41,6 +68,20 @@
     kind: net
     username: vyos
     password: vyos
+    tower_host: "https://127.0.0.1:443"
+    tower_password: "{{ results.stdout }}"
+    tower_username: admin
+    validate_certs: no
+
+- name: Create Template 01 Global Change
+  tower_job_template:
+    name: "01 - Global Change"
+    job_type: "run"
+    inventory: "Routers"
+    project: "ansible-networking"
+    playbook: "global-change.yml"
+    credential: "vyos-ssh"
+    state: "present"
     tower_host: "https://127.0.0.1:443"
     tower_password: "{{ results.stdout }}"
     tower_username: admin

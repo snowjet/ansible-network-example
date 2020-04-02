@@ -1,0 +1,23 @@
+all:
+  routers:
+    hosts:
+      R1: 
+        ansible_host: 192.168.128.1
+        ansible_network_os: vyos
+        ansible_user: vyos
+      R2: 
+        ansible_host: 192.168.128.2
+        ansible_network_os: vyos
+        ansible_user: vyos
+  tower:
+    tower:
+      ansible_host: 127.0.0.1 
+      ansible_port: 2231 
+      ansible_user: root 
+      ansible_python_interpreter: /opt/venv/tower/bin/python
+  clients:
+    client:
+      ansible_host: 192.168.130.100
+  servers:
+    server: 
+      ansible_host: 192.168.129.100
