@@ -86,3 +86,88 @@
     tower_password: "{{ results.stdout }}"
     tower_username: admin
     validate_certs: no
+    
+- name: Create Template 02 Provision Site
+  tower_job_template:
+    name: "02 - Provision Site"
+    job_type: "run"
+    inventory: "Routers"
+    project: "ansible-networking"
+    playbook: "provision-site.yml"
+    credential: "vyos-ssh"
+    state: "present"
+    tower_host: "https://127.0.0.1:443"
+    tower_password: "{{ results.stdout }}"
+    tower_username: admin
+    validate_certs: no
+    
+        
+- name: Create Template 03 Remove Firewall
+  tower_job_template:
+    name: "03 - Remove Firewall"
+    job_type: "run"
+    inventory: "Routers"
+    project: "ansible-networking"
+    playbook: "remove-firewall.yml"
+    credential: "vyos-ssh"
+    state: "present"
+    tower_host: "https://127.0.0.1:443"
+    tower_password: "{{ results.stdout }}"
+    tower_username: admin
+    validate_certs: no
+    
+- name: Create Template 04 Backup Config Show Diff
+  tower_job_template:
+    name: "04 - Backup-Config-Diff"
+    job_type: "run"
+    inventory: "Routers"
+    project: "ansible-networking"
+    playbook: "backup-config-diff.yml"
+    credential: "vyos-ssh"
+    state: "present"
+    tower_host: "https://127.0.0.1:443"
+    tower_password: "{{ results.stdout }}"
+    tower_username: admin
+    validate_certs: no
+        
+- name: Create Template 05 Restore Config
+  tower_job_template:
+    name: "05 - Restore Config"
+    job_type: "run"
+    inventory: "Routers"
+    project: "ansible-networking"
+    playbook: "restore-config.yml"
+    credential: "vyos-ssh"
+    state: "present"
+    tower_host: "https://127.0.0.1:443"
+    tower_password: "{{ results.stdout }}"
+    tower_username: admin
+    validate_certs: no
+            
+- name: Create Template 06 Generate Network Diagram
+  tower_job_template:
+    name: "06 - Generate Network Config"
+    job_type: "run"
+    inventory: "Routers"
+    project: "ansible-networking"
+    playbook: "gen-network-diagram.yml"
+    credential: "vyos-ssh"
+    state: "present"
+    tower_host: "https://127.0.0.1:443"
+    tower_password: "{{ results.stdout }}"
+    tower_username: admin
+    validate_certs: no
+    
+- name: Create Template 07 Generate Gold Config
+  tower_job_template:
+    name: "07 - Generate Gold Config"
+    job_type: "run"
+    inventory: "Routers"
+    project: "ansible-networking"
+    playbook: "gen-gold-config.yml"
+    credential: "vyos-ssh"
+    state: "present"
+    tower_host: "https://127.0.0.1:443"
+    tower_password: "{{ results.stdout }}"
+    tower_username: admin
+    validate_certs: no
