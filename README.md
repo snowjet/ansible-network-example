@@ -113,8 +113,15 @@ You will need to add your license file, create the credentials and import the pl
 ansible_host: 192.168.128.1
 ansible_network_os: vyos
 ansible_user: vyos
+config_git_repo: "set the git repo to store and pull router configurations"
 ```
 
+*git vars*
+If you want to runt he play that can compare and diff router configuraitons, you need a place to upload and store the playbooks. Create a repo in github and set the config_git_repo variable. Make sure the git-ssh key listed above (Credentials) is associated with the git_repo.
+```yaml
+---
+config_git_repo: "set the git repo to store and pull router configurations"
+```
 
 #### Guide to configure Tower to send email
 
