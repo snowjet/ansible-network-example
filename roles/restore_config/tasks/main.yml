@@ -25,7 +25,7 @@
   register: date_as_epoch
   run_once: true  
 
-- name: ensure direcory for router exists
+- name: ensure directory for router exists
   local_action:
       module: file
       path: "{{ local_git_conf_dir }}/{{ inventory_hostname }}"
